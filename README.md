@@ -17,6 +17,13 @@ This repository contains some standard boilerplate for an implementation of Uncl
 2. Add the dependency on your modules, only updating the version according to available tags ( https://github.com/felipefpx/android-clean-bootstrap-rxkotlin/tags ) :
 ```
   dependencies {
+	compile 'com.github.felipefpx.android-clean-bootstrap-rxkotlin:presentation:0.0.1'
+	compile 'com.github.felipefpx.android-clean-bootstrap-rxkotlin:domain:0.0.1'
+   }
+```
+With excludes (optional):
+```
+  dependencies {
      compile ('com.github.felipefpx.android-clean-bootstrap-rxkotlin:presentation:0.0.1', {
         exclude group: 'javax.inject', module: 'javax.inject'
         exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib'
