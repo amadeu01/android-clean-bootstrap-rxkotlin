@@ -11,11 +11,7 @@ import com.felipeporge.cleanbootstrap.rxkotlin.presentation.models.ErrorModel
  */
 interface MvpView {
 
-    /**
-     * Gets base activity [View].
-     * @return [View] instance.
-     */
-    fun getBaseView(): View?
+    val baseView: View?
 
     /**
      * Shows the loading view.
@@ -44,9 +40,7 @@ interface MvpView {
     /**
      * Shows an error.
      * @param error         Error to show.
-     * *
      * @param retryListener On retry listener.
-     * *
      * @param requestCode   Request code to retry.
      */
     fun showError(error: ErrorModel, retryListener: OnRetryListener? = null, requestCode: Int = 0)
