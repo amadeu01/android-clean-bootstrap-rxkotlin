@@ -1,71 +1,48 @@
 package com.felipeporge.cleanbootstrap.rxkotlin.domain.interactors
 
-import com.felipeporge.cleanbootstrap.rxkotlin.domain.executors.PostExecutionThread
-import com.felipeporge.cleanbootstrap.rxkotlin.domain.executors.TaskExecutorThread
-import rx.Observable
-import rx.Subscriber
-import rx.functions.Action0
-import rx.functions.Action1
-import rx.schedulers.Schedulers
-import rx.subscriptions.Subscriptions
+import com.felipeporge.cleanbootstrap.rxkotlin.domain.executors.PostExecution
+import com.felipeporge.cleanbootstrap.rxkotlin.domain.executors.TaskExecutor
+import io.reactivex.Observable
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.observers.DisposableObserver
+import io.reactivex.schedulers.Schedulers
 
 
 /**
- * This class represents an Use Case.
+ * This class represents an use case.
+ * @author  Felipe Porge Xavier - <a href="http://www.felipeporge.com" target="_blank">www.felipeporge.com</a>
+ * @date    27/05/2017
  */
-abstract class UseCase<RESULT> protected constructor (val taskExecutorThread: TaskExecutorThread, val postExecutorThread: PostExecutionThread) {
+abstract class UseCase<PARAMS, RESULT>(val taskExecutor: TaskExecutor, val postExecutor: PostExecution) {
 
-    private var subscription = Subscriptions.empty()
-
-    /**
-     * Builds an [Observable] which will be used when executing the current [UseCase].
-     */
-    protected abstract fun buildObservable(): Observable<RESULT>
+    val compDisposables = CompositeDisposable()
 
     /**
-     * Executes the use case.
-     * @param subscriber    [Subscriber] that will observe the use case [Observable].
+     * Builds an use case observer.
+     * @param params    Use case parameters.
      */
-    fun execute(subscriber: Subscriber<RESULT>) {
-        this.subscription = buildObservable()
-                .subscribeOn(Schedulers.from(taskExecutorThread))
-                .observeOn(postExecutorThread.scheduler)
-                .subscribe(subscriber)
-    }
+    internal abstract fun buildObservable(params: PARAMS): Observable<RESULT>
 
     /**
-     * Executes the use case.
-     * @param onNext    [Action1] that handles on next data.
-     * @param onError   [Action1] that handles occurred errors ([Throwable] instance).
+     * Executes this use case.
+     * @param observer  Disposable observer instance.
+     * @param params    use case parameters.
      */
-    fun execute(onNext: Action1<RESULT>, onError: Action1<Throwable>) {
-        this.subscription = buildObservable()
-                .subscribeOn(Schedulers.from(taskExecutorThread))
-                .observeOn(postExecutorThread.scheduler)
-                .subscribe(onNext, onError)
-    }
+    fun execute(observer: DisposableObserver<RESULT>, params: PARAMS) {
+        val disposable = buildObservable(params)
+                .subscribeOn(Schedulers.from(taskExecutor))
+                .observeOn(postExecutor.scheduler)
+                .subscribeWith(observer)
 
-    /**
-     * Executes the use case.
-     * @param onNext    [Action1] that handles on next data.
-     * @param onError   [Action1] that handles occurred errors ([Throwable] instance).
-     * @param onCompleted   [Action0] that handles on completed state.
-     */
-    fun execute(onNext: Action1<RESULT>, onError: Action1<Throwable>, onCompleted: Action0) {
-        this.subscription = buildObservable()
-                .subscribeOn(Schedulers.from(taskExecutorThread))
-                .observeOn(postExecutorThread.scheduler)
-                .subscribe(onNext, onError, onCompleted)
+        compDisposables.add(disposable)
     }
 
 
     /**
-     * Unsubscribes from current [Subscription].
+     * Disposes the composite disposables
      */
-    fun unsubscribe() {
-        if (!subscription.isUnsubscribed) {
-            subscription.unsubscribe()
-        }
+    fun dispose() {
+        if(!compDisposables.isDisposed)
+            compDisposables.dispose()
     }
-
 }

@@ -27,11 +27,6 @@ interface MvpPresenter<VIEW: MvpView> {
     fun pause()
 
     /**
-     * Stops the presenter, because the view was stopped.
-     */
-    fun stop()
-
-    /**
      * Destroys the presenter, because the view was destroyed.
      */
     fun destroy()

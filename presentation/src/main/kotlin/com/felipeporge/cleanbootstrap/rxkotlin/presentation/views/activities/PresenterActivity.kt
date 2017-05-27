@@ -1,6 +1,7 @@
 package com.felipeporge.cleanbootstrap.rxkotlin.presentation.views.activities
 
 import android.support.v7.app.AppCompatActivity
+import android.view.View
 import com.felipeporge.cleanbootstrap.rxkotlin.presentation.presenters.MvpPresenter
 import com.felipeporge.cleanbootstrap.rxkotlin.presentation.views.MvpView
 import javax.inject.Inject
@@ -10,15 +11,15 @@ import javax.inject.Inject
  * @author  Felipe Porge Xavier - <a href="http://www.felipeporge.com" target="_blank">www.felipeporge.com</a>
  * @date    14/05/2017
  */
-abstract class PresenterActivity<PRESENTER: MvpPresenter<VIEW>, VIEW: MvpView> : AppCompatActivity(), MvpView {
+abstract class PresenterActivity<PRESENTER: MvpPresenter<in MvpView>> : AppCompatActivity(), MvpView {
 
     @Inject
     lateinit var presenter: PRESENTER
 
-    @Suppress("UNCHECKED_CAST")
-    override fun onStart() {
-        super.onStart()
-        presenter.view = (this as? VIEW)
+    override fun setContentView(view: View?) {
+        super.setContentView(view)
+
+        presenter.view = this
         presenter.onViewCreated()
     }
 
@@ -30,11 +31,6 @@ abstract class PresenterActivity<PRESENTER: MvpPresenter<VIEW>, VIEW: MvpView> :
     override fun onPause() {
         super.onPause()
         presenter.pause()
-    }
-
-    override fun onStop() {
-        super.onStop()
-        presenter.stop()
     }
 
     override fun onDestroy() {
