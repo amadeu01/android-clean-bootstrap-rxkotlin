@@ -43,13 +43,11 @@ interface MvpView {
 
     /**
      * Shows an error.
-     * @param error         Error to show.
-     * *
-     * @param retryListener On retry listener.
-     * *
+     * @param error         ErrorModel to show.
      * @param requestCode   Request code to retry.
+     * @param onRetry       On retry function.
      */
-    fun showError(error: ErrorModel, retryListener: OnRetryListener? = null, requestCode: Int = 0)
+    fun showError(error: ErrorModel, requestCode: Int = 0, onRetry: ((requestCode: Int) -> Unit)? )
 
 
     /**
