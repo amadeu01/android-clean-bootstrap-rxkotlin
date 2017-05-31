@@ -1,6 +1,8 @@
 package com.felipeporge.cleanbootstrap.rxkotlin.presentation.views.fragments
 
+import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.view.View
 import com.felipeporge.cleanbootstrap.rxkotlin.presentation.presenters.MvpPresenter
 import com.felipeporge.cleanbootstrap.rxkotlin.presentation.views.MvpView
 import javax.inject.Inject
@@ -16,10 +18,9 @@ abstract class PresenterFragment<PRESENTER: MvpPresenter<VIEW>, VIEW: MvpView> :
     lateinit var presenter: PRESENTER
 
     @Suppress("UNCHECKED_CAST")
-    override fun onStart() {
-        super.onStart()
+    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         presenter.view = (this as? VIEW)
-        presenter.onViewCreated()
     }
 
     override fun onResume() {
@@ -30,11 +31,6 @@ abstract class PresenterFragment<PRESENTER: MvpPresenter<VIEW>, VIEW: MvpView> :
     override fun onPause() {
         super.onPause()
         presenter.pause()
-    }
-
-    override fun onStop() {
-        super.onStop()
-        presenter.stop()
     }
 
     override fun onDestroy() {
