@@ -11,16 +11,15 @@ import javax.inject.Inject
  * @author  Felipe Porge Xavier - <a href="http://www.felipeporge.com" target="_blank">www.felipeporge.com</a>
  * @date    14/05/2017
  */
-abstract class PresenterActivity<PRESENTER: MvpPresenter<in MvpView>> : AppCompatActivity(), MvpView {
+abstract class PresenterActivity<PRESENTER: MvpPresenter<VIEW>, VIEW: MvpView> : AppCompatActivity(), MvpView {
 
     @Inject
     lateinit var presenter: PRESENTER
 
+    @Suppress("UNCHECKED_CAST")
     override fun setContentView(view: View?) {
         super.setContentView(view)
-
-        presenter.view = this
-        presenter.onViewCreated()
+        presenter.view = (this as VIEW)
     }
 
     override fun onResume() {

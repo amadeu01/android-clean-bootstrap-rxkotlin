@@ -13,16 +13,15 @@ import javax.inject.Inject
  * @author  Felipe Porge Xavier - <a href="http://www.felipeporge.com" target="_blank">www.felipeporge.com</a>
  * @date    14/05/2017
  */
-abstract class PresenterDialog<PRESENTER: MvpPresenter<in MvpView>> : DialogFragment(), MvpView {
+abstract class PresenterDialog<PRESENTER: MvpPresenter<VIEW>, VIEW: MvpView> : DialogFragment(), MvpView {
 
     @Inject
     lateinit var presenter: PRESENTER
 
+    @Suppress("UNCHECKED_CAST")
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        presenter.view = this
-        presenter.onViewCreated()
+        presenter.view = (this as? VIEW)
     }
 
     override fun onResume() {

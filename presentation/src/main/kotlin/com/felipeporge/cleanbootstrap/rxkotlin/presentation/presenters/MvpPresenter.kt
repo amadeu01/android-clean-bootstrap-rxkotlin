@@ -7,27 +7,22 @@ import com.felipeporge.cleanbootstrap.rxkotlin.presentation.views.MvpView
  * @author  Felipe Porge Xavier - <a href="http://www.felipeporge.com" target="_blank">www.felipeporge.com</a>
  * @date    14/05/2017
  */
-interface MvpPresenter<VIEW: MvpView> {
+abstract class MvpPresenter<VIEW: MvpView> {
 
-    var view: VIEW?
-
-    /**
-     * Notifies the view was created.
-     */
-    fun onViewCreated()
+    var view: VIEW? = null
 
     /**
      * Resumes the presenter, because the view was resumed.
      */
-    fun resume()
+    abstract fun resume()
 
     /**
      * Pauses the presenter, because the view was paused.
      */
-    fun pause()
+    abstract fun pause()
 
     /**
      * Destroys the presenter, because the view was destroyed.
      */
-    fun destroy()
+    abstract fun destroy()
 }

@@ -13,7 +13,7 @@ import io.reactivex.schedulers.Schedulers
  * @author  Felipe Porge Xavier - <a href="http://www.felipeporge.com" target="_blank">www.felipeporge.com</a>
  * @date    27/05/2017
  */
-abstract class UseCase<PARAMS, RESULT>(val taskExecutor: TaskExecutor, val postExecutor: PostExecution) {
+abstract class UseCase<in PARAMS, RESULT>(val taskExecutor: TaskExecutor, val postExecutor: PostExecution) {
 
     val compDisposables = CompositeDisposable()
 
