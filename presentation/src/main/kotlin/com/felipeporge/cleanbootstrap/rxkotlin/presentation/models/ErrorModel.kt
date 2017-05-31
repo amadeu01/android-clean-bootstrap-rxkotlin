@@ -1,6 +1,5 @@
 package com.felipeporge.cleanbootstrap.rxkotlin.presentation.models
 
-
 /**
  * This class represents an error.
  * @author  Felipe Porge Xavier - <a href="http://www.felipeporge.com" target="_blank">www.felipeporge.com</a>

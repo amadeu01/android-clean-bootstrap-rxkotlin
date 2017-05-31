@@ -1,8 +1,6 @@
 package com.felipeporge.cleanbootstrap.rxkotlin.presentation.views.fragments
 
-import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.view.View
 import com.felipeporge.cleanbootstrap.rxkotlin.presentation.presenters.MvpPresenter
 import com.felipeporge.cleanbootstrap.rxkotlin.presentation.views.MvpView
 import javax.inject.Inject
@@ -18,8 +16,8 @@ abstract class PresenterFragment<PRESENTER: MvpPresenter<VIEW>, VIEW: MvpView> :
     lateinit var presenter: PRESENTER
 
     @Suppress("UNCHECKED_CAST")
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onStart() {
+        super.onStart()
         presenter.view = (this as? VIEW)
     }
 

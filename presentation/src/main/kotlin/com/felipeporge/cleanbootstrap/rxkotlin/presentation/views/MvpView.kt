@@ -49,6 +49,7 @@ interface MvpView {
      */
     fun showError(error: ErrorModel, requestCode: Int = 0, onRetry: ((requestCode: Int) -> Unit)? )
 
+
     /**
      * Hides the keyboard.
      */
