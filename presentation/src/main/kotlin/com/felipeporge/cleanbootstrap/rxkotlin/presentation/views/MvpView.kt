@@ -15,7 +15,7 @@ interface MvpView {
      * Gets base activity [View].
      * @return [View] instance.
      */
-    fun getBaseView(): View?
+    var baseView : View?
 
     /**
      * Shows the loading view.

@@ -12,11 +12,6 @@ interface MvpPresenter<VIEW: MvpView> {
     var view: VIEW?
 
     /**
-     * Notifies the view was created.
-     */
-    fun onViewCreated()
-
-    /**
      * Resumes the presenter, because the view was resumed.
      */
     fun resume()
@@ -25,11 +20,6 @@ interface MvpPresenter<VIEW: MvpView> {
      * Pauses the presenter, because the view was paused.
      */
     fun pause()
-
-    /**
-     * Stops the presenter, because the view was stopped.
-     */
-    fun stop()
 
     /**
      * Destroys the presenter, because the view was destroyed.
