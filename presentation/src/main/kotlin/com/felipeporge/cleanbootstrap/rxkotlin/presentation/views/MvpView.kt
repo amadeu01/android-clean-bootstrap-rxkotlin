@@ -11,7 +11,11 @@ import com.felipeporge.cleanbootstrap.rxkotlin.presentation.models.ErrorModel
  */
 interface MvpView {
 
-    val baseView: View?
+    /**
+     * Gets base activity [View].
+     * @return [View] instance.
+     */
+    var baseView : View?
 
     /**
      * Shows the loading view.
@@ -44,6 +48,7 @@ interface MvpView {
      * @param onRetry       On retry function.
      */
     fun showError(error: ErrorModel, requestCode: Int = 0, onRetry: ((requestCode: Int) -> Unit)? )
+
 
     /**
      * Hides the keyboard.
