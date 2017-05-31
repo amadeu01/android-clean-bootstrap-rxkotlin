@@ -17,9 +17,15 @@ abstract class PresenterActivity<PRESENTER: MvpPresenter<VIEW>, VIEW: MvpView> :
     lateinit var presenter: PRESENTER
 
     @Suppress("UNCHECKED_CAST")
+<<<<<<< HEAD
     override fun setContentView(view: View?) {
         super.setContentView(view)
         presenter.view = (this as VIEW)
+=======
+    override fun onStart() {
+        super.onStart()
+        presenter.view = (this as? VIEW)
+>>>>>>> 37d05ec0b54ab67491b77ae18b8dbce009a34ef1
     }
 
     override fun onResume() {
