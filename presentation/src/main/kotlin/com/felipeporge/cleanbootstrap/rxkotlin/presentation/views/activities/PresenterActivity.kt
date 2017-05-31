@@ -1,6 +1,7 @@
 package com.felipeporge.cleanbootstrap.rxkotlin.presentation.views.activities
 
 import android.support.v7.app.AppCompatActivity
+import android.view.View
 import com.felipeporge.cleanbootstrap.rxkotlin.presentation.presenters.MvpPresenter
 import com.felipeporge.cleanbootstrap.rxkotlin.presentation.views.MvpView
 import javax.inject.Inject
@@ -16,10 +17,9 @@ abstract class PresenterActivity<PRESENTER: MvpPresenter<VIEW>, VIEW: MvpView> :
     lateinit var presenter: PRESENTER
 
     @Suppress("UNCHECKED_CAST")
-    override fun onStart() {
-        super.onStart()
-        presenter.view = (this as? VIEW)
-        presenter.onViewCreated()
+    override fun setContentView(view: View?) {
+        super.setContentView(view)
+        presenter.view = (this as VIEW)
     }
 
     override fun onResume() {
@@ -30,11 +30,6 @@ abstract class PresenterActivity<PRESENTER: MvpPresenter<VIEW>, VIEW: MvpView> :
     override fun onPause() {
         super.onPause()
         presenter.pause()
-    }
-
-    override fun onStop() {
-        super.onStop()
-        presenter.stop()
     }
 
     override fun onDestroy() {
