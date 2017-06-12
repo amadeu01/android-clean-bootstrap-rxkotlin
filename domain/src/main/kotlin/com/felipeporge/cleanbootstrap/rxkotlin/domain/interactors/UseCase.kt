@@ -21,7 +21,7 @@ abstract class UseCase<in PARAMS, RESULT>(val taskExecutor: TaskExecutor, val po
      * Builds an use case observer.
      * @param params    Use case parameters.
      */
-    internal abstract fun buildObservable(params: PARAMS): Observable<RESULT>
+    abstract fun buildObservable(params: PARAMS): Observable<RESULT>
 
     /**
      * Executes this use case.
