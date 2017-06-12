@@ -1,9 +1,7 @@
 package com.felipeporge.cleanbootstrap.rxkotlin.presentation.views.dialogs
 
 
-import android.os.Bundle
 import android.support.v4.app.DialogFragment
-import android.view.View
 import com.felipeporge.cleanbootstrap.rxkotlin.presentation.presenters.MvpPresenter
 import com.felipeporge.cleanbootstrap.rxkotlin.presentation.views.MvpView
 import javax.inject.Inject
@@ -19,8 +17,8 @@ abstract class PresenterDialog<PRESENTER: MvpPresenter<VIEW>, VIEW: MvpView> : D
     lateinit var presenter: PRESENTER
 
     @Suppress("UNCHECKED_CAST")
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onStart() {
+        super.onStart()
         presenter.view = (this as? VIEW)
     }
 
