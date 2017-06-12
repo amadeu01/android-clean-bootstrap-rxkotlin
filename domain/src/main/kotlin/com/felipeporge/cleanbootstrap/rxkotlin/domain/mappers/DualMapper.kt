@@ -2,11 +2,11 @@ package com.felipeporge.cleanbootstrap.rxkotlin.domain.mappers
 
 
 /**
- * This class represents a mapper.
+ * This class represents a mapper that allows bi-directional transformations.
  * @author  Felipe Porge Xavier - <a href="http://www.felipeporge.com" target="_blank">www.felipeporge.com</a>
  * @date    12/06/2017
  */
-abstract class Mapper<FROM, TO> {
+abstract class DualMapper<FROM, TO> {
 
     /**
      * Transforms a value.
@@ -27,12 +27,12 @@ abstract class Mapper<FROM, TO> {
      * @param value Values to transform.
      * @return Transformed values.
      */
-    fun transform(value: Array<FROM>) = value.map { transform(it) }
+    fun transform(value: List<FROM>) : List<TO> = value.map { transform(it) }
 
     /**
      * Parses an array back.
      * @param value Values to parse back.
      * @return Values parsed back.
      */
-    fun parseBack(value: Array<TO>) = value.map { parseBack(it) }
+    fun parseBack(value: List<TO>) : List<FROM> = value.map { parseBack(it) }
 }
