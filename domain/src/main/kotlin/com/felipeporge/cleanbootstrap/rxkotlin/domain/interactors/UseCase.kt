@@ -38,6 +38,29 @@ abstract class UseCase<in PARAMS, RESULT>(val taskExecutor: TaskExecutor, val po
         compDisposables.add(disposable)
     }
 
+    /**
+     * Executes this use case.
+     * @param params    use case parameters.
+     * @param onNext    Function to run on next result received.
+     * @param onError   Function to run on error.
+     * @param onComplete    Function to run on complete.
+     */
+    fun execute(params: PARAMS,
+                onNext: ((result: RESULT) -> Unit)? = null,
+                onError: ((exception: Throwable?) -> Unit)? = null,
+                onComplete: (() -> Unit)? = null) {
+
+        val disposable = buildObservable(params)
+                .subscribeOn(Schedulers.from(taskExecutor))
+                .observeOn(postExecutor.scheduler)
+                .subscribeWith(object : DisposableObserver<RESULT>() {
+                    override fun onNext(result: RESULT) { onNext?.invoke(result) }
+                    override fun onError(exception: Throwable?) { onError?.invoke(exception) }
+                    override fun onComplete() { onComplete?.invoke() }
+                })
+
+        compDisposables.add(disposable)
+    }
 
     /**
      * Disposes the composite disposables
