@@ -32,11 +32,13 @@ abstract class UseCase<in PARAMS, RESULT>(val taskExecutor: TaskExecutor, val po
      * @param onError   Function to run on error.
      * @param onComplete    Function to run on complete.
      */
-    fun execute(params: PARAMS,
-                onSubscribe: (() -> Unit)? = null,
-                onNext: ((result: RESULT) -> Unit)? = null,
-                onError: ((exception: Throwable?) -> Unit)? = null,
-                onComplete: (() -> Unit)? = null) {
+    fun execute(
+            params: PARAMS,
+            onSubscribe: (() -> Unit)? = null,
+            onNext: ((result: RESULT) -> Unit)? = null,
+            onError: ((exception: Throwable?) -> Unit)? = null,
+            onComplete: (() -> Unit)? = null
+    ): DisposableObserver<RESULT> {
 
         val disposable = buildObservable(params)
                 .subscribeOn(Schedulers.from(taskExecutor))
@@ -49,6 +51,8 @@ abstract class UseCase<in PARAMS, RESULT>(val taskExecutor: TaskExecutor, val po
                 })
 
         compDisposables.add(disposable)
+
+        return disposable
     }
 
     /**
