@@ -51,8 +51,9 @@ interface MvpView {
 
     /**
      * Shows the keyboard.
+     * @param view  View to focus on.
      */
-    fun showSoftKeyboard()
+    fun showSoftKeyboard(view: View)
 
     /**
      * Hides the keyboard.
