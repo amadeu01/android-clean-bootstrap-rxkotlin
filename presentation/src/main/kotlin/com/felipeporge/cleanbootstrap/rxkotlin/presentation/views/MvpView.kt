@@ -50,6 +50,12 @@ interface MvpView {
     fun showError(error: ErrorModel, requestCode: Int = 0, onRetry: ((requestCode: Int) -> Unit)? )
 
     /**
+     * Shows an error.
+     * @param throwable Exception to show.
+     */
+    fun showError(throwable: Throwable)
+
+    /**
      * Shows the keyboard.
      * @param view  View to focus on.
      */
