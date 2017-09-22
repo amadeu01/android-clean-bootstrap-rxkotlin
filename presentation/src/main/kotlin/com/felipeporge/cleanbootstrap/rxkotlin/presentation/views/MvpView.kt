@@ -47,7 +47,7 @@ interface MvpView {
      * @param requestCode   Request code to retry.
      * @param onRetry       On retry function.
      */
-    fun showError(error: ErrorModel, requestCode: Int = 0, onRetry: ((requestCode: Int) -> Unit)? )
+    fun showError(error: ErrorModel, requestCode: Int = 0, onRetry: ((requestCode: Int) -> Unit)? = null)
 
     /**
      * Shows an error.
@@ -55,7 +55,7 @@ interface MvpView {
      * @param requestCode   Request code to retry.
      * @param onRetry       On retry function.
      */
-    fun showError(throwable: Throwable, requestCode: Int = 0, onRetry: ((requestCode: Int) -> Unit)? )
+    fun showError(throwable: Throwable?, requestCode: Int = 0, onRetry: ((requestCode: Int) -> Unit)? = null)
 
     /**
      * Shows the keyboard.
