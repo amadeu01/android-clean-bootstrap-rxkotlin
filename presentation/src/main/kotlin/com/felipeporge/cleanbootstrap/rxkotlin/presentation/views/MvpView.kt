@@ -52,8 +52,10 @@ interface MvpView {
     /**
      * Shows an error.
      * @param throwable Exception to show.
+     * @param requestCode   Request code to retry.
+     * @param onRetry       On retry function.
      */
-    fun showError(throwable: Throwable)
+    fun showError(throwable: Throwable, requestCode: Int = 0, onRetry: ((requestCode: Int) -> Unit)? )
 
     /**
      * Shows the keyboard.
