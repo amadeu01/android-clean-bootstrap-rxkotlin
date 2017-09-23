@@ -17,6 +17,7 @@ import org.reactivestreams.Subscription
  * @date    21/09/2017
  */
 class PaginatedPublisher<T>(
+        private val perPage: Int,
         private val requestBlock: (page: Int) -> Observable<List<T>>
 ) : Publisher<List<T>>, Disposable {
 
@@ -57,10 +58,13 @@ class PaginatedPublisher<T>(
                             .observeOn(observeOn)
                             .subscribeBy(
                                     onNext = { result ->
-                                        hasNext = result.isNotEmpty()
-                                        if (hasNext) {
+                                        hasNext = result.isNotEmpty() && result.size >= perPage
+
+                                        if (hasNext || result.size < perPage) {
                                             onNext?.invoke(result)
-                                        } else {
+                                        }
+
+                                        if (!hasNext) {
                                             onComplete?.invoke()
                                             cancel()
                                         }
