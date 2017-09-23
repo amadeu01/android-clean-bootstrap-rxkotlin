@@ -4,6 +4,7 @@ import com.felipeporge.cleanbootstrap.rxkotlin.domain.executors.PostExecution
 import com.felipeporge.cleanbootstrap.rxkotlin.domain.executors.TaskExecutor
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.disposables.Disposable
 import io.reactivex.observers.DisposableObserver
 import io.reactivex.schedulers.Schedulers
 
@@ -13,9 +14,12 @@ import io.reactivex.schedulers.Schedulers
  * @author  Felipe Porge Xavier - <a href="http://www.felipeporge.com" target="_blank">www.felipeporge.com</a>
  * @date    27/05/2017
  */
-abstract class UseCase<in PARAMS, RESULT>(val taskExecutor: TaskExecutor, val postExecutor: PostExecution) {
+abstract class UseCase<in PARAMS, RESULT>(
+        private val taskExecutor: TaskExecutor,
+        private val postExecutor: PostExecution
+) : Interactor<PARAMS, RESULT> {
 
-    val compDisposables = CompositeDisposable()
+    private val compDisposables = CompositeDisposable()
 
     /**
      * Builds an use case observer.
@@ -24,21 +28,13 @@ abstract class UseCase<in PARAMS, RESULT>(val taskExecutor: TaskExecutor, val po
      */
     abstract fun buildObservable(params: PARAMS): Observable<RESULT>
 
-    /**
-     * Executes this use case.
-     * @param params    use case parameters.
-     * @param onSubscribe   Function to run on observer subscribed.
-     * @param onNext    Function to run on next result received.
-     * @param onError   Function to run on error.
-     * @param onComplete    Function to run on complete.
-     */
-    fun execute(
+    override fun execute(
             params: PARAMS,
-            onSubscribe: (() -> Unit)? = null,
-            onNext: ((result: RESULT) -> Unit)? = null,
-            onError: ((exception: Throwable?) -> Unit)? = null,
-            onComplete: (() -> Unit)? = null
-    ): DisposableObserver<RESULT> {
+            onSubscribe: (() -> Unit)?,
+            onNext: ((result: RESULT) -> Unit)?,
+            onError: ((exception: Throwable?) -> Unit)?,
+            onComplete: (() -> Unit)?
+    ) {
 
         val disposable = buildObservable(params)
                 .subscribeOn(Schedulers.from(taskExecutor))
@@ -51,14 +47,9 @@ abstract class UseCase<in PARAMS, RESULT>(val taskExecutor: TaskExecutor, val po
                 })
 
         compDisposables.add(disposable)
-
-        return disposable
     }
 
-    /**
-     * Disposes the composite disposables
-     */
-    fun dispose() {
+    override fun dispose() {
         if(!compDisposables.isDisposed)
             compDisposables.dispose()
     }
