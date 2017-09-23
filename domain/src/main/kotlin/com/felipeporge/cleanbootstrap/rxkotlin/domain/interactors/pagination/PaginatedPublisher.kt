@@ -60,7 +60,7 @@ class PaginatedPublisher<T>(
                                     onNext = { result ->
                                         hasNext = result.isNotEmpty() && result.size >= perPage
 
-                                        if (hasNext || result.size < perPage) {
+                                        if (hasNext || (result.isNotEmpty() && result.size < perPage)) {
                                             onNext?.invoke(result)
                                         }
 
