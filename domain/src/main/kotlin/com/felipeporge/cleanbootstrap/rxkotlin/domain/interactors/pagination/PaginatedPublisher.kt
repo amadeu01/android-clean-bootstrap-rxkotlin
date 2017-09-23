@@ -1,11 +1,14 @@
 package com.felipeporge.cleanbootstrap.rxkotlin.domain.interactors.pagination
 
-import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Scheduler
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
+import io.reactivex.rxkotlin.subscribeBy
 import org.reactivestreams.Publisher
 import org.reactivestreams.Subscriber
+import org.reactivestreams.Subscription
 
 
 /**
@@ -15,7 +18,7 @@ import org.reactivestreams.Subscriber
  */
 class PaginatedPublisher<T>(
         private val requestBlock: (page: Int) -> Observable<List<T>>
-) : Publisher<List<T>> {
+) : Publisher<List<T>>, Disposable {
 
     var currPage = 1
         private set
@@ -23,25 +26,61 @@ class PaginatedPublisher<T>(
     var hasNext = true
         private set
 
-    private var flow =
-            Flowable
-                    .fromCallable {
-                        requestBlock(currPage++)
-                                .blockingFirst()
-                    }
-                    .repeat()
-                    .map { list ->
-                        hasNext = list.isNotEmpty()
-                        list // return
-                    }
-                    .takeUntil { !hasNext }
+    private var compositeDisposable = CompositeDisposable()
+
+    private var subscribeOn: Scheduler = AndroidSchedulers.mainThread()
+    private var observeOn: Scheduler = AndroidSchedulers.mainThread()
+
+    private var doOnSubscribe: (() -> Unit)? = null
+    private var onSubscribe: ((Subscription) -> Unit)? = null
+    private var onNext: ((List<T>) -> Unit)? = null
+    private var onComplete: (() -> Unit)? = null
+    private var onError: ((Throwable) -> Unit)? = null
+
+    private var subscription = object : Subscription {
+
+        override fun cancel() {
+            compositeDisposable.dispose()
+            compositeDisposable.clear()
+        }
+
+        override fun request(n: Long) {
+            if (!hasNext)
+                return
+
+            compositeDisposable.add(
+                    Observable
+                            .concat(
+                                    (1..n).map { requestBlock(currPage++) }
+                            )
+                            .subscribeOn(subscribeOn)
+                            .observeOn(observeOn)
+                            .subscribeBy(
+                                    onNext = { result ->
+                                        onNext?.invoke(result)
+
+                                        if (result.isEmpty()) {
+                                            hasNext = false
+                                            onComplete?.invoke()
+                                            cancel()
+                                        }
+                                    },
+                                    onError = { exception ->
+                                        onError?.invoke(exception)
+                                    }
+                            )
+            )
+
+        }
+    }
 
     /**
      * Does something on subscribe.
      * @param block Block to execute.
      */
     fun doOnSubscribe(block: () -> Unit): PaginatedPublisher<T> {
-        return this.apply { flow = flow.doOnSubscribe { block() } }
+        doOnSubscribe = block
+        return this
     }
 
     /**
@@ -49,7 +88,8 @@ class PaginatedPublisher<T>(
      * @return scheduler    Scheduler to use.
      */
     fun subscribeOn(scheduler: Scheduler): PaginatedPublisher<T> {
-        return this.apply { flow = flow.subscribeOn(scheduler) }
+        subscribeOn = scheduler
+        return this
     }
 
     /**
@@ -57,7 +97,8 @@ class PaginatedPublisher<T>(
      * @param scheduler Scheduler to use.
      */
     fun observeOn(scheduler: Scheduler): PaginatedPublisher<T> {
-        return this.apply { flow = flow.observeOn(scheduler) }
+        observeOn = scheduler
+        return this
     }
 
     /**
@@ -66,12 +107,15 @@ class PaginatedPublisher<T>(
      * @return  Disposable.
      */
     fun subscribeWith(subscriber: Subscriber<in List<T>>?): Disposable {
-        return flow.subscribe(
-                { result -> subscriber?.onNext(result) }, // OnNext
-                { exception -> subscriber?.onError(exception) }, // OnError
-                { subscriber?.onComplete() }, // OnComplete
-                { subscription -> subscriber?.onSubscribe(subscription) } // OnSubscribe
-        )
+        onSubscribe = { sub -> subscriber?.onSubscribe(sub) }
+        onNext = { items -> subscriber?.onNext(items) }
+        onError = { errors -> subscriber?.onError(errors) }
+        onComplete = { subscriber?.onComplete() }
+
+        onSubscribe?.invoke(subscription)
+        doOnSubscribe?.invoke()
+
+        return compositeDisposable
     }
 
     /**
@@ -83,6 +127,15 @@ class PaginatedPublisher<T>(
     }
 
     override fun subscribe(subscriber: Subscriber<in List<T>>?) {
-        flow.subscribe(subscriber)
+        subscribeWith(subscriber)
+    }
+
+
+    override fun isDisposed(): Boolean {
+        return compositeDisposable.isDisposed
+    }
+
+    override fun dispose() {
+        compositeDisposable.dispose()
     }
 }

@@ -17,7 +17,9 @@ abstract class PaginatedSubscriber<T>(
 
     override fun onSubscribe(s: Subscription?) {
         subscription = s?.apply {
-            if(requestFirstOnSubscribe) request(1)
+            if (requestFirstOnSubscribe) {
+                request(1)
+            }
         }
     }
 
