@@ -57,10 +57,10 @@ class PaginatedPublisher<T>(
                             .observeOn(observeOn)
                             .subscribeBy(
                                     onNext = { result ->
-                                        onNext?.invoke(result)
-
-                                        if (result.isEmpty()) {
-                                            hasNext = false
+                                        hasNext = result.isNotEmpty()
+                                        if (hasNext) {
+                                            onNext?.invoke(result)
+                                        } else {
                                             onComplete?.invoke()
                                             cancel()
                                         }
