@@ -19,6 +19,7 @@ abstract class PresenterFragment<PRESENTER: MvpPresenter<VIEW>, VIEW: MvpView> :
     override fun onStart() {
         super.onStart()
         presenter.view = (this as? VIEW)
+        presenter.start()
     }
 
     override fun onResume() {

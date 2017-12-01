@@ -12,6 +12,11 @@ interface MvpPresenter<VIEW: MvpView> {
     var view: VIEW?
 
     /**
+     * Starts the presenter, because the view was started.
+     */
+    fun start()
+
+    /**
      * Resumes the presenter, because the view was resumed.
      */
     fun resume()

@@ -20,6 +20,7 @@ abstract class PresenterDialog<PRESENTER: MvpPresenter<VIEW>, VIEW: MvpView> : D
     override fun onStart() {
         super.onStart()
         presenter.view = (this as? VIEW)
+        presenter.start()
     }
 
     override fun onResume() {
