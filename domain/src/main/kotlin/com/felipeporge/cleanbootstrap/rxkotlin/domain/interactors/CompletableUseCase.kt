@@ -36,9 +36,9 @@ abstract class CompletableUseCase<in PARAMS>(
      */
     fun execute(
             params: PARAMS,
-            onSubscribe: (() -> Unit)?,
-            onError: ((exception: Throwable?) -> Unit)?,
-            onComplete: (() -> Unit)?
+            onSubscribe: (() -> Unit)? = null,
+            onError: ((exception: Throwable?) -> Unit)? = null,
+            onComplete: (() -> Unit)? = null
     ) {
 
         val disposable = buildCompletable(params)

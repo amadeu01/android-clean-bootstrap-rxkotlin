@@ -37,10 +37,10 @@ abstract class ObservableUseCase<in PARAMS, RESULT>(
      */
     fun execute(
             params: PARAMS,
-            onSubscribe: (() -> Unit)?,
-            onNext: ((result: RESULT) -> Unit)?,
-            onError: ((exception: Throwable?) -> Unit)?,
-            onComplete: (() -> Unit)?
+            onSubscribe: (() -> Unit)? = null,
+            onNext: ((result: RESULT) -> Unit)? = null,
+            onError: ((exception: Throwable?) -> Unit)? = null,
+            onComplete: (() -> Unit)? = null
     ) {
 
         val disposable = buildObservable(params)
