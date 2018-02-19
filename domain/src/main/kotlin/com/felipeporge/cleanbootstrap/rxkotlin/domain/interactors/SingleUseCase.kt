@@ -36,9 +36,9 @@ abstract class SingleUseCase<in PARAMS, RESULT>(
      */
     fun execute(
             params: PARAMS,
-            onSubscribe: (() -> Unit)?,
-            onSuccess: ((result: RESULT) -> Unit)?,
-            onError: ((exception: Throwable?) -> Unit)?
+            onSubscribe: (() -> Unit)? = null,
+            onSuccess: ((result: RESULT) -> Unit)? = null,
+            onError: ((exception: Throwable?) -> Unit)? = null
     ) {
 
         val disposable = buildSingle(params)
