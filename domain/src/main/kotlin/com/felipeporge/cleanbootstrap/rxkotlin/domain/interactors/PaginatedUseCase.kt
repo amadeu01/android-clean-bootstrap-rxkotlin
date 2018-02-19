@@ -16,7 +16,7 @@ import io.reactivex.schedulers.Schedulers
 abstract class PaginatedUseCase<in PARAMS, RESULT>(
         private val taskExecutor: TaskExecutor,
         private val postExecutor: PostExecution
-) : Interactor<PARAMS, List<RESULT>> {
+) {
 
     private val compDisposables = CompositeDisposable()
 
@@ -71,7 +71,15 @@ abstract class PaginatedUseCase<in PARAMS, RESULT>(
         return subscriber
     }
 
-    override fun execute(
+    /**
+     * Executes the interactor.
+     * @param params    Interactor params.
+     * @param onSubscribe   Function to run on observer subscribed.
+     * @param onNext    Function to run on next result received.
+     * @param onError   Function to run on error.
+     * @param onComplete    Function to run on complete.
+     */
+    fun execute(
             params: PARAMS,
             onSubscribe: (() -> Unit)?,
             onNext: ((result: List<RESULT>) -> Unit)?,
@@ -87,7 +95,10 @@ abstract class PaginatedUseCase<in PARAMS, RESULT>(
         )
     }
 
-    override fun dispose() {
+    /**
+     * Disposes this interactor.
+     */
+    fun dispose() {
         if (!compDisposables.isDisposed)
             compDisposables.dispose()
     }
