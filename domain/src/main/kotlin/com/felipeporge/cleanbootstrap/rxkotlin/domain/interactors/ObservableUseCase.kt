@@ -4,7 +4,6 @@ import com.felipeporge.cleanbootstrap.rxkotlin.domain.executors.PostExecution
 import com.felipeporge.cleanbootstrap.rxkotlin.domain.executors.TaskExecutor
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.disposables.Disposable
 import io.reactivex.observers.DisposableObserver
 import io.reactivex.schedulers.Schedulers
 
@@ -14,10 +13,10 @@ import io.reactivex.schedulers.Schedulers
  * @author  Felipe Porge Xavier - <a href="http://www.felipeporge.com" target="_blank">www.felipeporge.com</a>
  * @date    27/05/2017
  */
-abstract class UseCase<in PARAMS, RESULT>(
+abstract class ObservableUseCase<in PARAMS, RESULT>(
         private val taskExecutor: TaskExecutor,
         private val postExecutor: PostExecution
-) : Interactor<PARAMS, RESULT> {
+) {
 
     private val compDisposables = CompositeDisposable()
 
@@ -28,7 +27,15 @@ abstract class UseCase<in PARAMS, RESULT>(
      */
     abstract fun buildObservable(params: PARAMS): Observable<RESULT>
 
-    override fun execute(
+    /**
+     * Executes the interactor.
+     * @param params    Interactor params.
+     * @param onSubscribe   Function to run on observer subscribed.
+     * @param onNext    Function to run on next result received.
+     * @param onError   Function to run on error.
+     * @param onComplete    Function to run on complete.
+     */
+    fun execute(
             params: PARAMS,
             onSubscribe: (() -> Unit)?,
             onNext: ((result: RESULT) -> Unit)?,
@@ -41,16 +48,27 @@ abstract class UseCase<in PARAMS, RESULT>(
                 .observeOn(postExecutor.scheduler)
                 .doOnSubscribe { onSubscribe?.invoke() }
                 .subscribeWith(object : DisposableObserver<RESULT>() {
-                    override fun onNext(result: RESULT) { onNext?.invoke(result) }
-                    override fun onError(exception: Throwable?) { onError?.invoke(exception) }
-                    override fun onComplete() { onComplete?.invoke() }
+                    override fun onNext(result: RESULT) {
+                        onNext?.invoke(result)
+                    }
+
+                    override fun onError(exception: Throwable?) {
+                        onError?.invoke(exception)
+                    }
+
+                    override fun onComplete() {
+                        onComplete?.invoke()
+                    }
                 })
 
         compDisposables.add(disposable)
     }
 
-    override fun dispose() {
-        if(!compDisposables.isDisposed)
+    /**
+     * Disposes this interactor.
+     */
+    fun dispose() {
+        if (!compDisposables.isDisposed)
             compDisposables.dispose()
     }
 }
